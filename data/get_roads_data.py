@@ -12,7 +12,8 @@ list_urls = ['http://www.cs.toronto.edu/~vmnih/data/mass_roads/train/sat/index.h
              'https://www.cs.toronto.edu/~vmnih/data/mass_roads/test/map/index.html']
 
 root = "massachusetts_roads_dataset/"
-list_pathes = ['train_data', 'train_pred', 'val_data', 'val_pred', 'test_data', 'test_pred']
+#list_pathes = ['train_data', 'train_pred', 'val_data', 'val_pred', 'test_data', 'test_pred']
+list_pathes = ['train_pred', 'val_data', 'val_pred', 'test_data', 'test_pred']
 
 if not os.path.exists(root):
     os.mkdir("massachusetts_roads_dataset/") 
