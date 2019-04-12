@@ -9,8 +9,8 @@ from torch.autograd import Variable
 from torchvision import models
 
 
-pretrained_mean = torch.tensor([0.485, 0.456, 0.406]).view((1, 3, 1, 1), requires_grad = False)
-pretrained_std = torch.tensor([0.229, 0.224, 0.225]).view((1, 3, 1, 1), requires_grad = False)
+pretrained_mean = torch.tensor([0.485, 0.456, 0.406], requires_grad = False).view((1, 3, 1, 1))
+pretrained_std = torch.tensor([0.229, 0.224, 0.225], requires_grad = False).view((1, 3, 1, 1))
 
 
 class blockUNet(nn.Module):
@@ -68,7 +68,7 @@ class UNet(nn.Module):
         self.u3 = blockUNet(nf * 8, nf * 2, "up_2", transposed = True, bn = bnu, prelu = preluu, dropout = dropoutu)
         # 112 x 112 x (4 nf) -> 224 x 224 x 1
         self.u4 = blockUNet(nf * 4, 1, "up_1", transposed = True, bn = bnu, prelu = preluu, dropout = dropoutu)
-
+        self.active = nn.Sigmoid()
 
     def forward(self, x):
 
@@ -82,7 +82,7 @@ class UNet(nn.Module):
         x = self.u3(torch.cat([x, x2], 1))
         x = self.u4(torch.cat([x, x1], 1))
 
-        return x
+        return self.active(x)
 
 
 def choose_vgg(name):
@@ -116,6 +116,7 @@ class VGGNet(nn.Module):
 
     def __init__(self, name, layers, cuda = True):
 
+        super(VGGNet, self).__init__()
         self.vgg = choose_vgg(name)
         self.layers = layers
 
@@ -127,14 +128,14 @@ class VGGNet(nn.Module):
 
     def forward(self, x):
 
-        x = (x - mean) / std
+        x = (x - self.mean) / self.std
 
         results = []
 
         for ii, model in enumerate(self.features):
             x = model(x)
             if ii in self.layers:
-                results.append(x)
+                results.append(x.view(x.shape[0], -1))
 
         return results
 
@@ -143,16 +144,17 @@ class TopologyNet(nn.Module):
 
     def __init__(self, unet, vggnet, K = 1):
 
+        super(TopologyNet, self).__init__()
         self.unet = unet
         self.vggnet = vggnet
         self.K = K
 
 
-    def foward(self, x, y):
+    def forward(self, x, y):
 
         results = []
 
-        for i in range(K):
+        for i in range(self.K):
             input = torch.cat((x, y), dim = 1)
             y = self.unet(input)
             y_topo = self.vggnet(torch.cat((y, y, y), dim = 1))

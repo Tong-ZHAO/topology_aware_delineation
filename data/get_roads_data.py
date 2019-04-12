@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# coding: utf-8
+# Author: Tong ZHAO
+
+
 import numpy 
 import urllib.request 
 

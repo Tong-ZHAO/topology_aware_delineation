@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# coding: utf-8
+# Author: Tong ZHAO
+
+
 import numpy as np
 import pickle
 import os, sys
