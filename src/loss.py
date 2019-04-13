@@ -15,8 +15,10 @@ def iterative_loss(preds, vgg_loss, pred_loss, vgg_true, y_true):
     loss_pred, loss_vgg = 0., 0.
 
     for i in range(K):
-        loss_pred += pred_loss(preds[i][0], y_true)
+        loss_pred += (i + 1) * pred_loss(preds[i][0], y_true)
         for j in range(N):
-            loss_vgg += vgg_loss(preds[i][1][j], vgg_true[j])
+            loss_vgg += (i + 1) * vgg_loss(preds[i][1][j], vgg_true[j])
 
-    return loss_pred, loss_vgg / N
+    coeff = 0.5 * K * (K + 1)
+
+    return loss_pred / coeff, loss_vgg / (coeff * N)
