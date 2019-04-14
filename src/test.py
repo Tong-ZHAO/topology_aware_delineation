@@ -25,12 +25,27 @@ def plot_image(image, title, gray = True):
         plt.imshow(image)
     plt.title(title)
 
+def metrics(target, predict):
+
+    TP = float(np.logical_and(target > 0, predict > 0).sum())
+    FN = float(np.logical_and(target > 0, predict < 0.1).sum())
+    FP = float(np.logical_and(target < 0.1, predict > 0).sum())
+
+    print(FN)
+
+    complete = TP / (TP + FN)
+    correct = TP / (TP + FP)
+    quality = TP / (TP + FP + FN)
+
+    return complete, correct, quality
+
+
 if __name__ == '__main__':
 
     # Parameters
     parser = argparse.ArgumentParser()
-    parser.add_argument('--image', type = str, default = '../data/massachusetts_roads_dataset/test_data/20728960_15.png', help = 'image path')
-    parser.add_argument('--label', type = str, default = '../data/massachusetts_roads_dataset/test_pred/20728960_15.png', help = 'label path')
+    parser.add_argument('--image', type = str, default = '../data/massachusetts_roads_dataset/test_data/10378780_15.png', help = 'image path')
+    parser.add_argument('--label', type = str, default = '../data/massachusetts_roads_dataset/test_pred/10378780_15.png', help = 'label path')
     parser.add_argument('--K', type = int, default = 3, help = 'number of iterative steps')
     # Model settings
     parser.add_argument('--prelud', type = float, default = 0.2, help = 'prelu coeff for down-sampling block')
@@ -85,14 +100,20 @@ if __name__ == '__main__':
         for k in range(opt.K):
             curr_input = torch.cat((input, init_target), dim = 1)
             init_target = unet(curr_input)
-            lpredicts.append(torch.squeeze(init_target).data.cpu().detach().numpy())
+            lpredicts.append(torch.squeeze(init_target).data.cpu().detach().numpy() > opt.thresh)
 
     # plot images
+    target = np.squeeze(target.data.cpu().detach().numpy())
     plot_image(np.asarray(image), "Input Image")
-    plot_image(np.asarray(label), "Target Image", True)
+    plot_image(target, "Target Image", True)
 
     for i, img in enumerate(lpredicts):
-        plot_image(img > opt.thresh, "Iteration %d" % (i + 1), True)
+        complete, correct, quality = metrics(target > 0.5, img)
+        plot_image(img, "Iteration %d" % (i + 1), True)
+        print("Iteration %d: " % (i + 1))
+        print("Completeness: %f" % complete)
+        print("Correctness : %f" % correct)
+        print("Quality     : %f" % quality)
 
     plt.show()
 
