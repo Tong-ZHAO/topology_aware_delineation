@@ -36,10 +36,15 @@ Then the model is finetuned using K=3 on the same dataset.
 python train.py --K 3 --model ../log/pretrained/model.t7
 ```
 
+<figure>
+  <img src="/img/screenshot.png" width="900"/>
+</figure> 
+
+
 ### Testing
 
 ```
-python eval.py --model path_to_model --image path_to_image --label path_to_groundtruth
+python test.py --model path_to_model --image path_to_image --label path_to_groundtruth
 ```
 
 ## Results
