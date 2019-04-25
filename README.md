@@ -5,7 +5,7 @@ Final Project for M2 MVA course: Deformable models and geodesic methods for imag
 
  <figure>
   <img src="/img/pipeline.png" width="900"/>
-  <figcaption>Figure 1: Training Pipeline Reprinted from Acticle</figcaption>
+  <figcaption>Figure 1: Training Pipeline Reprinted from Article</figcaption>
 </figure> 
 
 ## Requirements
