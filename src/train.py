@@ -160,7 +160,7 @@ if __name__ == "__main__":
     trainset = RoadSet(opt.dataRoot, "train", transform_train)
     valset = RoadSet(opt.dataRoot, "val", transform_test)
     trainloader = DataLoader(trainset, batch_size = opt.batchSize, shuffle = True, num_workers = int(opt.workers))
-    valloader = DataLoader(trainset, batch_size = opt.batchSize, shuffle = True, num_workers = int(opt.workers))
+    valloader = DataLoader(valset, batch_size = opt.batchSize, shuffle = True, num_workers = int(opt.workers))
     
     print('training set: ', len(trainset))
     print('val set     : ', len(valset))
